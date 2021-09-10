@@ -56,6 +56,14 @@ public class UsuarioService {
 	}
 
 	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
+		// verificar se e-mail de usuario já está cadastrado ao atualizar.
+		Optional<Usuario> buscaUsuario = usuarioRepository.findByUsuario(usuario.getUsuario());
+		if (buscaUsuario.isPresent()) {
+			if (buscaUsuario.get().getId() != usuario.getId())
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+						"E-mail de usuário já cadastrado! Informe um diferente.", null);
+
+		}
 
 		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent()) {
 
@@ -67,7 +75,6 @@ public class UsuarioService {
 			usuario.setSenha(encoder(usuario.getSenha()));
 
 			return Optional.of(usuarioRepository.save(usuario));
-			
 
 		} else {
 
